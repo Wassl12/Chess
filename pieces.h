@@ -5,20 +5,23 @@ using namespace std;
 class Board {
 public:
 	std::vector <std::vector <Piece* > > arr;
-
+	Piece* bKing;
+	Piece* wKing;
 	Board();
 	void Print();
 	void printChar(int row,int column);
 	bool isLegal(int x, int y, char type);
+	bool threatened(int x, int y, char defendingColor);//
 };
 
 class Piece {
 public:
 	char type;
 	char color;
+	bool moved;// if it has moved at all
 	int8_t x;
 	int8_t y;
-	virtual vector < pair<int8_t, int8_t> > move(Board& board) = 0;
+	virtual void move(Board& board, vector < pair<int8_t, int8_t> > & moves) = 0;
 	virtual void Char() = 0;
 	Piece(char color, int8_t x, int8_t y);
 
@@ -27,7 +30,7 @@ public:
 class Pawn :  public Piece {
 public:
 	
-	vector < pair<int8_t, int8_t> > move(Board& board);
+	void move(Board& board, vector < pair<int8_t, int8_t> >& moves);
 	void Char();
 	Pawn(char color, int8_t x, int8_t y);
 };
@@ -35,7 +38,7 @@ public:
 class Rook : public Piece {
 public:
 	
-	vector < pair<int8_t, int8_t> > move(Board& board);
+	void move(Board& board, vector < pair<int8_t, int8_t> >& moves);
 	void Char();
 	Rook(char color, int8_t x, int8_t y);
 };
@@ -43,7 +46,7 @@ public:
 class Knight : public Piece {
 public:
 	
-	vector < pair<int8_t, int8_t> >move(Board& board);
+	void move(Board& board, vector < pair<int8_t, int8_t> >& moves);
 	void Char();
 	Knight(char color, int8_t x, int8_t y);
 };
@@ -51,7 +54,7 @@ public:
 class Bishop : public Piece {
 public:
 	
-	vector < pair<int8_t, int8_t> > move(Board& board);
+	void move(Board& board, vector < pair<int8_t, int8_t> >& moves);
 	void Char();
 	Bishop(char color, int8_t x, int8_t y);
 };
@@ -59,7 +62,7 @@ public:
 class Queen : public Piece {
 public:
 	
-	vector < pair<int8_t, int8_t>> move(Board& board);
+	void move(Board& board, vector < pair<int8_t, int8_t> >& moves);
 	void Char();
 	Queen(char color, int8_t x, int8_t y);
 };
@@ -67,7 +70,7 @@ public:
 class King : public Piece {
 public:
 	
-	vector < pair<int8_t, int8_t> >move(Board& board);
+	void move(Board& board, vector < pair<int8_t, int8_t> >& moves);
 	void Char();
 	King(char color, int8_t x, int8_t y);
 };
@@ -77,5 +80,5 @@ public:
 	
 	Empty(char color, int8_t x, int8_t y);
 	void Char();
-	vector < pair<int8_t, int8_t>> move(Board& board);
+	void move(Board& board, vector < pair<int8_t, int8_t> >& moves);
 };
