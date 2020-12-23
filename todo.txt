@@ -1,6 +1,7 @@
 1.* Create class declarations for pieces and board --> pieces.h
-2. Create class definitions for pieces and board -->pieces.cpp
+2.* Create class definitions for pieces and board -->pieces.cpp
 3.* Create the print function --> print.cpp
+4A. Create a verification function for moves to check for discoveries and illegal moves
 4. Create the capability to play versus another user --> driver.cpp
 5. Create the computer that can play against you -->engine.cpp & driver.cpp
 6. Create a permutation generator that can generate different boards and swap --> engine.cpp & engine.h

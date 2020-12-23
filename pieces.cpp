@@ -1,7 +1,7 @@
 #include "pieces.h"
 #include <iostream>
 
-Piece::Piece(char colorin, int8_t xin, int8_t yin) : color(colorin), x(xin), y(yin) {}
+Piece::Piece(char colorin, int8_t xin, int8_t yin) : color(colorin), x(xin), y(yin), moved(false) {}
 
 Rook::Rook(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { type = 'R'; }
 
@@ -17,7 +17,7 @@ Pawn::Pawn(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { ty
 
 Empty::Empty(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { type = 'E'; }
 
-bool Board::isLegal( int x, int y, char color) {
+bool Board::isLegal( int y, int x, char color) {
 	if (x < 0 || x > 7 || y < 0 || y > 7)
 		return false;
 	if (this->arr[y][x]->color == color)
@@ -52,6 +52,7 @@ Board::Board() {
 	arr[0][2] = new Bishop('b', 2, 0);
 	arr[0][3] = new Queen('b', 3, 0);
 	arr[0][4] = new King('b', 4, 0);
+	bKing = arr[0][4];
 	arr[0][5] = new Bishop('b', 5, 0);
 	arr[0][6] = new Knight('b', 6, 0);
 	arr[0][7] = new Rook('b', 7, 0);
@@ -71,14 +72,15 @@ Board::Board() {
 	arr[7][2] = new Bishop('w', 7, 2);
 	arr[7][3] = new Queen('w', 7, 3);
 	arr[7][4] = new King('w', 7, 4);
+	wKing = arr[7][4];
 	arr[7][5] = new Bishop('w', 7, 5);
 	arr[7][6] = new Knight('w', 7, 6);
 	arr[7][7] = new Rook('w', 7, 7);
 }
 
-vector<pair<int8_t,int8_t> >Pawn::move(Board& board) {
+void Pawn::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	// capture the thing in front
-	vector <pair <int8_t, int8_t> > moves;
+	
 	if (this->color == 'b') {
 		if (board.arr[this->y + 1][this->x]->type == 'E')
 			moves.push_back({ y + 1,x });
@@ -96,11 +98,11 @@ vector<pair<int8_t,int8_t> >Pawn::move(Board& board) {
 			moves.push_back({ y - 1,x - 1 });
 
 	}
-	return moves;
+	
 }
 
-vector<pair<int8_t, int8_t> >Rook::move(Board& board) {
-	vector <pair <int8_t, int8_t> > moves;
+void Rook::move(Board& board, vector<pair<int8_t, int8_t> > & moves) {
+	
 	int spoty = this->y;
 	int spotx = this->x;
 	spotx++;
@@ -153,11 +155,11 @@ vector<pair<int8_t, int8_t> >Rook::move(Board& board) {
 		}
 		spoty++;
 	}
-	return moves;
+	
 }
 
-vector <pair <int8_t, int8_t> > Bishop::move(Board& board) {
-	vector <pair <int8_t, int8_t> > moves;
+void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
+	
 	int spoty = this->y;
 	int spotx = this->x;
 	spoty++;
@@ -222,11 +224,11 @@ vector <pair <int8_t, int8_t> > Bishop::move(Board& board) {
 		spotx++;
 		spoty--;
 	}
-	return moves;
+	
 }
 
-vector <pair <int8_t, int8_t> > Queen::move(Board &board) {
-	vector <pair <int8_t, int8_t> > moves;
+void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
+	
 	int spoty = this->y;
 	int spotx = this->x;
 	spotx++;
@@ -346,10 +348,10 @@ vector <pair <int8_t, int8_t> > Queen::move(Board &board) {
 		spotx++;
 		spoty--;
 	}
-	return moves;
+	
 }
 
-vector <pair <int8_t, int8_t> > Knight::move(Board& board) {
+ void Knight::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	// two up one right
 	// two up one left
 	// two right one up
@@ -358,7 +360,7 @@ vector <pair <int8_t, int8_t> > Knight::move(Board& board) {
 	// two down one right
 	// two left one up
 	// two left one right
-	vector <pair <int8_t, int8_t> > moves;
+	
 	if (board.isLegal(this->y + 2, this->x - 1, this->color))
 		moves.push_back({ this->y + 2, this->x - 1 });
 	if (board.isLegal(this->y + 2, this->x + 1, this->color))
@@ -379,7 +381,58 @@ vector <pair <int8_t, int8_t> > Knight::move(Board& board) {
 	if (board.isLegal(this->y - 1, this->x - 2, this->color))
 		moves.push_back({ this->y - 1, this->x - 2 });
 
-	return moves;
+	
 
 }
 
+void King::move(Board &board, vector <pair <int8_t, int8_t > > &moves) {
+	// THIS DOES NOT CHECK FOR ILLEGAL MOVES.
+	//THIS WILL LATER BE VERIFIED TO PREVENT THE USER FROM DOING SOMETHING STUPID
+	// up left
+	// up right
+	// down left
+	// down right
+	// left
+	// right
+	// up
+	// down
+	// Castle kingside
+	// Castle queenside
+	
+	// left
+	if (board.isLegal(this->y, this->x - 1, this->color))
+		moves.push_back({ this->y,this->x - 1 });
+	// down left
+	if (board.isLegal(this->y+1, this->x - 1, this->color))
+		moves.push_back({ this->y+1,this->x - 1 });
+	// up left
+	if (board.isLegal(this->y - 1, this->x - 1, this->color))
+		moves.push_back({ this->y - 1,this->x - 1 });
+	// up
+	if (board.isLegal(this->y - 1, this->x, this->color))
+		moves.push_back({ this->y - 1,this->x });
+	// down
+	if (board.isLegal(this->y + 1, this->x, this->color))
+		moves.push_back({ this->y + 1,this->x });
+	// right
+	if (board.isLegal(this->y, this->x+1, this->color))
+		moves.push_back({ this->y + 1,this->x+1 });
+	// right up
+	if (board.isLegal(this->y - 1, this->x + 1, this->color))
+		moves.push_back({ this->y - 1,this->x + 1 });
+	// right down
+	if (board.isLegal(this->y + 1, this->x + 1, this->color))
+		moves.push_back({ this->y + 1,this->x + 1 });
+	// castle kingside
+	if (!(this->moved || board.threatened(this->y, this->x, this->color) || board.threatened(this->y, this->x + 1, this->color) || board.threatened(this->y, this->x + 2, this->color) || board.arr[this->y][this->x + 3]->moved
+		 || board.arr[this->y][this->x + 1]->type != 'E' || board.arr[this->y][this->x + 2]->type != 'E')) {
+		moves.push_back({ -1,-1}); // special values
+	}
+	// castle queenside
+	if (!(this->moved || board.threatened(this->y, this->x, this->color) || board.threatened(this->y, this->x - 1, this->color) || board.threatened(this->y, this->x - 2, this->color) 
+		|| board.arr[this->y][this->x - 4]->moved
+	    || board.arr[this->y][this->x - 1]->type != 'E' || board.arr[this->y][this->x - 2]->type != 'E' || board.arr[this->y][this->x-3]->type != 'E')) {
+		moves.push_back({ -2,-2});// special values
+	}
+
+}
