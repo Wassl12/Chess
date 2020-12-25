@@ -45,6 +45,10 @@ void Knight::Char() {
 void Rook::Char() {
 	std::cout << 'R';
 }
+
+void Empty::Char() {
+	std::cout << 'E';
+}
 Board::Board() {
 	
 	arr[0][0] = new Rook('b',0, 0);
@@ -84,6 +88,8 @@ void Pawn::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	if (this->color == 'b') {
 		if (board.arr[this->y + 1][this->x]->type == 'E')
 			moves.push_back({ y + 1,x });
+		if (board.arr[this->y + 2][this->x]->type == 'E' && !board.arr[this->y][this->x]->moved)
+			moves.push_back({ y + 2,x });
 		if (this->x != 7 && board.arr[this->y + 1][this->x+1]->type != 'E' && board.arr[this->y + 1][this->x + 1]->color == 'w')
 			moves.push_back({ y + 1,x+1 });
 		if (this->x != 0 && board.arr[this->y + 1][this->x - 1]->type != 'E' && board.arr[this->y + 1][this->x - 1]->color == 'w')
@@ -92,6 +98,8 @@ void Pawn::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	else {
 		if (board.arr[this->y - 1][this->x]->type == 'E')
 			moves.push_back({ y - 1,x });
+		if (board.arr[this->y - 2][this->x]->type == 'E' && !board.arr[this->y][this->x]->moved)
+			moves.push_back({ y - 2,x });
 		if (this->x != 7 && board.arr[this->y - 1][this->x + 1]->type != 'E' && board.arr[this->y - 1][this->x + 1]->color == 'b')
 			moves.push_back({ y - 1,x + 1 });
 		if (this->x != 0 && board.arr[this->y - 1][this->x - 1]->type != 'E' && board.arr[this->y - 1][this->x - 1]->color == 'b')
@@ -436,3 +444,5 @@ void King::move(Board &board, vector <pair <int8_t, int8_t > > &moves) {
 	}
 
 }
+
+void Empty::move(Board& board, vector < pair<int8_t, int8_t> >& moves) {}
