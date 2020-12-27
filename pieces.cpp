@@ -1,21 +1,21 @@
 #include "pieces.h"
 #include <iostream>
 
-Piece::Piece(char colorin, int8_t xin, int8_t yin) : color(colorin), x(xin), y(yin), moved(false) {}
+Piece::Piece(char colorin, int8_t xin, int8_t yin, int valin) : color(colorin), x(xin), y(yin), value(valin), moved(false) {}
 
-Rook::Rook(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { type = 'R'; }
+Rook::Rook(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,5 } { type = 'R'; }
 
-Knight::Knight(char colorin, int8_t xin, int8_t yin) :  Piece{ colorin, xin,yin } { type = 'N'; }
+Knight::Knight(char colorin, int8_t xin, int8_t yin) :  Piece{ colorin, xin,yin,3 } { type = 'N'; }
 
-Bishop::Bishop(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { type = 'B'; }
+Bishop::Bishop(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,3 } { type = 'B'; }
 
-Queen::Queen(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { type = 'Q'; }
+Queen::Queen(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,9 } { type = 'Q'; }
 
-King::King(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin} { type = 'K'; }
+King::King(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,UINT32_MAX/2} { type = 'K'; }
 
-Pawn::Pawn(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { type = 'P'; }
+Pawn::Pawn(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,1 } { type = 'P'; }
 
-Empty::Empty(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { type = 'E'; }
+Empty::Empty(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,0 } { type = 'E'; }
 
 bool Board::isLegal( int y, int x, char color) {
 	if (x < 0 || x > 7 || y < 0 || y > 7)// not a segfault
@@ -54,19 +54,29 @@ void Empty::Char() {
 Board::Board() {
 	
 	arr[0][0] = new Rook('b',0, 0);
+	blackPieceMap["Rook"].push_back(arr[0][0]);
 	arr[0][1] = new Knight('b',1, 0);
+	blackPieceMap["Knight"].push_back(arr[0][1]);
 	arr[0][2] = new Bishop('b', 2, 0);
+	blackPieceMap["Bishop"].push_back(arr[0][2]);
 	arr[0][3] = new Queen('b', 3, 0);
+	blackPieceMap["Queen"].push_back(arr[0][3]);
 	arr[0][4] = new King('b', 4, 0);
+	blackPieceMap["King"].push_back(arr[0][4]);
 	bKing = arr[0][4];
 	arr[0][5] = new Bishop('b', 5, 0);
+	blackPieceMap["Bishop"].push_back(arr[0][5]);
 	arr[0][6] = new Knight('b', 6, 0);
+	blackPieceMap["Knight"].push_back(arr[0][6]);
 	arr[0][7] = new Rook('b', 7, 0);
+	blackPieceMap["Rook"].push_back(arr[0][7]);
 	for (int i = 0; i < 8; i++) {
 		arr[1][i] = new Pawn('b', i, 1);
+		blackPieceMap["Pawn"].push_back(arr[1][i]);
 	}
 	for (int i = 0; i < 8; i++) {
 		arr[6][i] = new Pawn('w', i, 6);
+		whitePieceMap["Pawn"].push_back(arr[6][i]);
 	}
 	for (int row = 2; row < 6; row++) {
 		for (int column = 0; column < 8; column++) {
@@ -74,14 +84,22 @@ Board::Board() {
 		}
 	}
 	arr[7][0] = new Rook('w',7, 0);
+	whitePieceMap["Rook"].push_back(arr[7][0]);
 	arr[7][1] = new Knight('w', 7, 1);
+	whitePieceMap["Knight"].push_back(arr[7][1]);
 	arr[7][2] = new Bishop('w', 7, 2);
+	whitePieceMap["Bishop"].push_back(arr[7][2]);
 	arr[7][3] = new Queen('w', 7, 3);
+	whitePieceMap["Queen"].push_back(arr[7][3]);
 	arr[7][4] = new King('w', 7, 4);
+	whitePieceMap["King"].push_back(arr[7][4]);
 	wKing = arr[7][4];
 	arr[7][5] = new Bishop('w', 7, 5);
+	whitePieceMap["Bishop"].push_back(arr[7][5]);
 	arr[7][6] = new Knight('w', 7, 6);
+	whitePieceMap["Knight"].push_back(arr[7][6]);
 	arr[7][7] = new Rook('w', 7, 7);
+	whitePieceMap["Rook"].push_back(arr[7][7]);
 }
 
 // If the position function needs the other pieces, we can use a map/unordered map to store all valuable pointers
@@ -519,3 +537,159 @@ void King::move(Board &board, vector <pair <int8_t, int8_t > > &moves) {
 }
 
 void Empty::move(Board& board, vector < pair<int8_t, int8_t> >& moves) {}
+
+/*        x = 0		1		2		3		4		5		6		7
+	y = 0     
+	y = 1
+	y = 2
+	y = 3
+	y = 4
+	y = 5
+	y = 6
+	y = 7
+	*/
+
+bool Board::threatened(int x, int y, char defendingColor){
+	
+	// checks for bounds so it can limit the search of pieces and make sure there are no indexes out of bounds. 
+
+	int copy_x = x;
+	int copy_y = y;
+
+	// checks horizontal to the left for threats
+
+	while(copy_x >= 0){
+		
+		if(this->arr[y][x]->color == defendingColor){
+			break;
+		}
+		
+		else if(this->arr[y][x]->color != defendingColor && (this->arr[y][x]->color == 'Q' || this->arr[y][x]->color == 'R')){
+			return true;
+		}
+		
+		--copy_x;
+	}
+	copy_x = x;
+
+	
+
+	while(copy_x <= 7){
+		
+		if(this->arr[y][x]->color == defendingColor){
+			break;
+		}
+		
+		else if(this->arr[y][x]->color != defendingColor && (this->arr[y][x]->color == 'Q' || this->arr[y][x]->color == 'R')){
+			return true;
+		}
+		
+		++copy_x;
+	}
+
+	// checks horizontal towards 7 for threats
+
+	copy_x = x;
+	while(copy_y <= 7){
+		
+		if(this->arr[y][x]->color == defendingColor){
+			break;
+		}
+		
+		else if(this->arr[y][x]->color != defendingColor && (this->arr[y][x]->color == 'Q' || this->arr[y][x]->color == 'R')){
+			return true;
+		}
+		
+		++copy_y;
+	}
+	copy_y = y;
+
+	// checks horizontal towards 0 for threats
+
+	while(0 <= copy_y ){
+		
+		if(this->arr[y][x]->color == defendingColor){
+			break;
+		}
+		
+		else if(this->arr[y][x]->color != defendingColor && (this->arr[y][x]->color == 'Q' || this->arr[y][x]->color == 'R')){
+			return true;
+		}
+		
+		--copy_y;
+	}
+	copy_y = y;
+
+	// checks left diagonal towards x=0,y=0 for a threat
+
+	while(0 <= copy_x && 0 <= copy_y ){
+		
+		if(this->arr[y][x]->color == defendingColor){
+			break;
+		}
+		
+		else if(this->arr[y][x]->color != defendingColor && (this->arr[y][x]->color == 'Q' || this->arr[y][x]->color == 'B')){
+			return true;
+		}
+		
+		--copy_y;
+		--copy_x;
+	}
+	copy_y = y;
+	copy_x = x;
+
+	// checks right towards x=7,y=0 horizontal for a threat
+
+	while( 7 >= copy_x && 0 <= copy_y ){
+		
+		if(this->arr[y][x]->color == defendingColor){
+			break;
+		}
+		
+		else if(this->arr[y][x]->color != defendingColor && (this->arr[y][x]->color == 'Q' || this->arr[y][x]->color == 'B')){
+			return true;
+		}
+		
+		--copy_y;
+		++copy_x;
+	}
+	copy_y = y;
+	copy_x = x;
+
+	// checks right towards x=0,y=7 horizontal for a threat
+
+	while( 0 <= copy_x &&  7 >= copy_y ){
+		
+		if(this->arr[y][x]->color == defendingColor){
+			break;
+		}
+		
+		else if(this->arr[y][x]->color != defendingColor && (this->arr[y][x]->color == 'Q' || this->arr[y][x]->color == 'B')){
+			return true;
+		}
+		
+		++copy_y;
+		--copy_x;
+	}
+	copy_y = y;
+	copy_x = x;
+
+	// checks right horizontal towards x=7, y=7 for a threat
+
+	while( 7 >= copy_x && 7 >= copy_y ){
+		
+		if(this->arr[y][x]->color == defendingColor){
+			break;
+		}
+		
+		else if(this->arr[y][x]->color != defendingColor && (this->arr[y][x]->color == 'Q' || this->arr[y][x]->color == 'B')){
+			return true;
+		}
+		
+		--copy_y;
+		++copy_x;
+	}
+
+	// still need to check for nearby pawn
+	// and horses
+}
