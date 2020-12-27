@@ -18,14 +18,14 @@ Pawn::Pawn(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { ty
 Empty::Empty(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin } { type = 'E'; }
 
 bool Board::isLegal( int y, int x, char color) {
-	if (x < 0 || x > 7 || y < 0 || y > 7)
+	if (x < 0 || x > 7 || y < 0 || y > 7)// not a segfault
 		return false;
-	if (this->arr[y][x]->color == color)
+	if (this->arr[y][x]->color == color)// if a similar piece is in the way
 		return false;
 	return true;
 
 }
-
+// print out piece name 
 void Pawn::Char(){
 	std::cout << 'P';
 }
@@ -49,6 +49,8 @@ void Rook::Char() {
 void Empty::Char() {
 	std::cout << 'E';
 }
+
+
 Board::Board() {
 	
 	arr[0][0] = new Rook('b',0, 0);
@@ -82,27 +84,39 @@ Board::Board() {
 	arr[7][7] = new Rook('w', 7, 7);
 }
 
+// If the position function needs the other pieces, we can use a map/unordered map to store all valuable pointers
 void Pawn::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	// capture the thing in front
-	
+
+	//creates a bunch of pairs and fills a vector of pairs
+	/*    x = 0		1		2		3		4		5		6		7
+	y = 0
+	y = 1	bp		bp		bp		bp
+	y = 2
+	y = 3
+	y = 4
+	y = 5
+	y = 6
+	y = 7
+	*/
 	if (this->color == 'b') {
-		if (board.arr[this->y + 1][this->x]->type == 'E')
+		if (board.isLegal(this->y + 1, this->x, this->color))
 			moves.push_back({ y + 1,x });
-		if (board.arr[this->y + 2][this->x]->type == 'E' && !board.arr[this->y][this->x]->moved)
+		if (board.isLegal(this->y+2,this->x,this->color) && !this->moved)
 			moves.push_back({ y + 2,x });
-		if (this->x != 7 && board.arr[this->y + 1][this->x+1]->type != 'E' && board.arr[this->y + 1][this->x + 1]->color == 'w')
+		if (board.isLegal(this->y+1,this->x+1,'b'))
 			moves.push_back({ y + 1,x+1 });
-		if (this->x != 0 && board.arr[this->y + 1][this->x - 1]->type != 'E' && board.arr[this->y + 1][this->x - 1]->color == 'w')
+		if (board.isLegal(this->y + 1, this->x - 1, 'b'))
 			moves.push_back({ y + 1,x - 1 });
 	}
 	else {
-		if (board.arr[this->y - 1][this->x]->type == 'E')
+		if (board.isLegal(this->y-1,this->x,this->color))
 			moves.push_back({ y - 1,x });
-		if (board.arr[this->y - 2][this->x]->type == 'E' && !board.arr[this->y][this->x]->moved)
+		if (board.isLegal(this->y-2,this->x,this->color) && !this->moved)
 			moves.push_back({ y - 2,x });
-		if (this->x != 7 && board.arr[this->y - 1][this->x + 1]->type != 'E' && board.arr[this->y - 1][this->x + 1]->color == 'b')
+		if (board.isLegal(this->y-1,this->x+1,this->color));
 			moves.push_back({ y - 1,x + 1 });
-		if (this->x != 0 && board.arr[this->y - 1][this->x - 1]->type != 'E' && board.arr[this->y - 1][this->x - 1]->color == 'b')
+		if (board.isLegal(this->y - 1, this->x - 1, this->color))
 			moves.push_back({ y - 1,x - 1 });
 
 	}
@@ -110,64 +124,98 @@ void Pawn::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 }
 
 void Rook::move(Board& board, vector<pair<int8_t, int8_t> > & moves) {
-	
+	// set spoty and spotx to rook's current position
 	int spoty = this->y;
+	
+	
+
+	// checks moves to right 
 	int spotx = this->x;
 	spotx++;
 	while (spotx < 8) {
 		if (board.arr[this->y][spotx]->type == 'E')
 			moves.push_back({ this->y,spotx });
-		else if (board.arr[this->y][spotx]->type == this->type)
+		else if (board.arr[this->y][spotx]->color == this->color) // if it's same color
 			break;
-		else {
+		else { 
+			// if it's opposite color, takes the piece and breaks
 			moves.push_back({ this->y,spotx });
 			break;
 		}
 		spotx++;
 	}
+	
+
+	// checks moves to left
 	spotx = this->x;
 	spotx--;
 	while (spotx >= 0) {
 		if (board.arr[this->y][spotx]->type == 'E')
 			moves.push_back({ this->y,spotx });
-		else if (board.arr[this->y][spotx]->type == this->type)
+		else if (board.arr[this->y][spotx]->color == this->color)// if it's same color
 			break;
 		else {
+			// if it's opposite color, takes the piece and breaks
 			moves.push_back({ this->y,spotx });
 			break;
 		}
 		spotx--;
 	}
+	// checks left
+
+
+
+	// check down
+	spoty = this->y;
 	spoty++;
 	while (spoty < 8) {
 		if (board.arr[spoty][this->x]->type == 'E')
 			moves.push_back({ spoty,this->x });
-		else if (board.arr[spoty][this->x]->type == this->type)
+		else if (board.arr[spoty][this->x]->color == this->color)
 			break;
 		else {
+			// if it's opposite color, takes the piece and breaks
 			moves.push_back({ spoty,this->x });
 			break;
 		}
 		spoty++;
 	}
+	// check down
+
+
+
+	// check up
 	spoty = this->y;
 	spoty--;
 	while (spoty >= 0) {
 		if (board.arr[spoty][this->x]->type == 'E')
 			moves.push_back({ spoty,this->x });
-		else if (board.arr[spoty][this->x]->type == this->type)
+		else if (board.arr[spoty][this->x]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,this->x });
 			break;
 		}
-		spoty++;
+		spoty--;
 	}
-	
+	// check up
 }
 
 void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
-	
+	//creates a bunch of pairs and fills a vector of pairs
+	/*    x = 0		1		2		3		4		5		6		7
+	y = 0
+	y = 1	bp		bp		bp		bp
+	y = 2
+	y = 3
+	y = 4
+	y = 5
+	y = 6
+	y = 7
+	*/
+
+
+	// down right
 	int spoty = this->y;
 	int spotx = this->x;
 	spoty++;
@@ -175,7 +223,7 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	while (spotx < 8 && spoty < 8) {
 		if (board.arr[spoty][spotx]->type == 'E')
 			moves.push_back({ spoty,spotx });
-		else if (board.arr[spoty][spotx]->type == this->type)
+		else if (board.arr[spoty][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,spotx });
@@ -184,6 +232,11 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 		spotx++;
 		spoty++;
 	}
+	// down right
+
+
+
+	// up right
 	int spoty = this->y;
 	int spotx = this->x;
 	spoty--;
@@ -191,7 +244,7 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	while (spotx < 8 && spoty >= 0) {
 		if (board.arr[spoty][spotx]->type == 'E')
 			moves.push_back({ spoty,spotx });
-		else if (board.arr[spoty][spotx]->type == this->type)
+		else if (board.arr[spoty][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,spotx });
@@ -200,6 +253,9 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 		spotx++;
 		spoty--;
 	}
+	// up right 
+
+	// down left
 	int spotx = this->x;
 	int spoty = this->y;
 	spotx--;
@@ -207,7 +263,7 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	while (spotx >= 0 && spoty < 8) {
 		if (board.arr[spoty][spotx]->type == 'E')
 			moves.push_back({ spoty,spotx });
-		else if (board.arr[spoty][spotx]->type == this->type)
+		else if (board.arr[spoty][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,spotx });
@@ -216,6 +272,10 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 		spotx--;
 		spoty++;
 	}
+	
+	// down left
+
+	// up left
 	int spotx = this->x;
 	int spoty = this->y;
 	spotx--;
@@ -223,27 +283,29 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	while (spotx >= 0 && spoty >= 0) {
 		if (board.arr[spoty][spotx]->type == 'E')
 			moves.push_back({ spoty,spotx });
-		else if (board.arr[spoty][spotx]->type == this->type)
+		else if (board.arr[spoty][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,spotx });
 			break;
 		}
-		spotx++;
+		spotx--;
 		spoty--;
 	}
-	
+	// up left
 }
 
 void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	
+	// ROOK MOVES //////////////////////////
+
 	int spoty = this->y;
 	int spotx = this->x;
 	spotx++;
 	while (spotx < 8) {
 		if (board.arr[this->y][spotx]->type == 'E')
 			moves.push_back({ this->y,spotx });
-		else if (board.arr[this->y][spotx]->type == this->type)
+		else if (board.arr[this->y][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ this->y,spotx });
@@ -256,7 +318,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	while (spotx >= 0) {
 		if (board.arr[this->y][spotx]->type == 'E')
 			moves.push_back({ this->y,spotx });
-		else if (board.arr[this->y][spotx]->type == this->type)
+		else if (board.arr[this->y][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ this->y,spotx });
@@ -268,7 +330,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	while (spoty < 8) {
 		if (board.arr[spoty][this->x]->type == 'E')
 			moves.push_back({ spoty,this->x });
-		else if (board.arr[spoty][this->x]->type == this->type)
+		else if (board.arr[spoty][this->x]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,this->x });
@@ -281,7 +343,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	while (spoty >= 0) {
 		if (board.arr[spoty][this->x]->type == 'E')
 			moves.push_back({ spoty,this->x });
-		else if (board.arr[spoty][this->x]->type == this->type)
+		else if (board.arr[spoty][this->x]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,this->x });
@@ -291,7 +353,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	}
 	////////// END ROOK ///////////
 
-
+	////////// START BISHOP STYLE MOVES ///////////
 	int spoty = this->y;
 	int spotx = this->x;
 	spoty++;
@@ -299,7 +361,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	while (spotx < 8 && spoty < 8) {
 		if (board.arr[spoty][spotx]->type == 'E')
 			moves.push_back({ spoty,spotx });
-		else if (board.arr[spoty][spotx]->type == this->type)
+		else if (board.arr[spoty][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,spotx });
@@ -315,7 +377,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	while (spotx < 8 && spoty >= 0) {
 		if (board.arr[spoty][spotx]->type == 'E')
 			moves.push_back({ spoty,spotx });
-		else if (board.arr[spoty][spotx]->type == this->type)
+		else if (board.arr[spoty][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,spotx });
@@ -331,7 +393,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	while (spotx >= 0 && spoty < 8) {
 		if (board.arr[spoty][spotx]->type == 'E')
 			moves.push_back({ spoty,spotx });
-		else if (board.arr[spoty][spotx]->type == this->type)
+		else if (board.arr[spoty][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,spotx });
@@ -347,7 +409,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	while (spotx >= 0 && spoty >= 0) {
 		if (board.arr[spoty][spotx]->type == 'E')
 			moves.push_back({ spoty,spotx });
-		else if (board.arr[spoty][spotx]->type == this->type)
+		else if (board.arr[spoty][spotx]->color == this->color)
 			break;
 		else {
 			moves.push_back({ spoty,spotx });
@@ -356,7 +418,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 		spotx++;
 		spoty--;
 	}
-	
+	////////// END BISHOP STYLE MOVES ///////////
 }
 
  void Knight::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
@@ -406,11 +468,22 @@ void King::move(Board &board, vector <pair <int8_t, int8_t > > &moves) {
 	// down
 	// Castle kingside
 	// Castle queenside
-	
+
+	/*    x = 0		1		2		3		4		5		6		7
+	y = 0
+	y = 1	bp		bp		bp		bp
+	y = 2
+	y = 3
+	y = 4
+	y = 5
+	y = 6
+	y = 7
+	*/
+
 	// left
 	if (board.isLegal(this->y, this->x - 1, this->color))
 		moves.push_back({ this->y,this->x - 1 });
-	// down left
+	// down left 
 	if (board.isLegal(this->y+1, this->x - 1, this->color))
 		moves.push_back({ this->y+1,this->x - 1 });
 	// up left

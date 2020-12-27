@@ -37,3 +37,10 @@
 *.vs
 *.user
 *.filters
+
+# Debug Information
+*.log
+*.idb
+*.pdb
+*.lastbuildstate
+*.tlog
