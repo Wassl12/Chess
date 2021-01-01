@@ -27,31 +27,31 @@ bool Board::isLegal( int y, int x, char color) {
 }
 // print out piece name 
 void Pawn::Char(){
-	std::cout << 'P';
+	std::cout << this->color << 'P';
 }
 
 void King::Char() {
-	std::cout << 'K';
+	std::cout << this->color << 'K';
 }
 void Queen::Char() {
-	std::cout << 'Q';
+	std::cout << this->color << 'Q';
 }
 void Bishop::Char() {
-	std::cout << 'B';
+	std::cout << this->color << 'B';
 }
 void Knight::Char() {
-	std::cout << 'N';
+	std::cout << this->color << 'N';
 }
 void Rook::Char() {
-	std::cout << 'R';
+	std::cout << this->color << 'R';
 }
 
 void Empty::Char() {
-	std::cout << 'E';
+	std::cout << "  ";
 }
 
 
-Board::Board() {
+Board::Board() : arr(8,vector<Piece*>(8)) {
 	
 	arr[0][0] = new Rook('b',0, 0);
 	blackPieceMap["Rook"].push_back(arr[0][0]);
@@ -122,9 +122,9 @@ void Pawn::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 			moves.push_back({ y + 1,x });
 		if (board.isLegal(this->y+2,this->x,this->color) && !this->moved)
 			moves.push_back({ y + 2,x });
-		if (board.isLegal(this->y+1,this->x+1,'b'))
+		if (board.isLegal(this->y+1,this->x+1,'b') && board.arr[y+1][x+1]->type != 'E')
 			moves.push_back({ y + 1,x+1 });
-		if (board.isLegal(this->y + 1, this->x - 1, 'b'))
+		if (board.isLegal(this->y + 1, this->x - 1, 'b') && board.arr[y + 1][x - 1]->type != 'E')
 			moves.push_back({ y + 1,x - 1 });
 	}
 	else {
@@ -132,9 +132,9 @@ void Pawn::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 			moves.push_back({ y - 1,x });
 		if (board.isLegal(this->y-2,this->x,this->color) && !this->moved)
 			moves.push_back({ y - 2,x });
-		if (board.isLegal(this->y-1,this->x+1,this->color));
+		if (board.isLegal(this->y-1,this->x+1,this->color) && board.arr[y - 1][x + 1]->type != 'E')
 			moves.push_back({ y - 1,x + 1 });
-		if (board.isLegal(this->y - 1, this->x - 1, this->color))
+		if (board.isLegal(this->y - 1, this->x - 1, this->color) && board.arr[y - 1][x - 1]->type != 'E')
 			moves.push_back({ y - 1,x - 1 });
 
 	}
@@ -255,8 +255,8 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 
 
 	// up right
-	int spoty = this->y;
-	int spotx = this->x;
+	 spoty = this->y;
+	 spotx = this->x;
 	spoty--;
 	spotx++;
 	while (spotx < 8 && spoty >= 0) {
@@ -274,8 +274,8 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	// up right 
 
 	// down left
-	int spotx = this->x;
-	int spoty = this->y;
+	 spotx = this->x;
+	 spoty = this->y;
 	spotx--;
 	spoty++;
 	while (spotx >= 0 && spoty < 8) {
@@ -294,8 +294,8 @@ void Bishop::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	// down left
 
 	// up left
-	int spotx = this->x;
-	int spoty = this->y;
+	 spotx = this->x;
+	 spoty = this->y;
 	spotx--;
 	spoty--;
 	while (spotx >= 0 && spoty >= 0) {
@@ -372,8 +372,8 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 	////////// END ROOK ///////////
 
 	////////// START BISHOP STYLE MOVES ///////////
-	int spoty = this->y;
-	int spotx = this->x;
+	 spoty = this->y;
+	 spotx = this->x;
 	spoty++;
 	spotx++;
 	while (spotx < 8 && spoty < 8) {
@@ -388,8 +388,8 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 		spotx++;
 		spoty++;
 	}
-	int spoty = this->y;
-	int spotx = this->x;
+	 spoty = this->y;
+	 spotx = this->x;
 	spoty--;
 	spotx++;
 	while (spotx < 8 && spoty >= 0) {
@@ -404,8 +404,8 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 		spotx++;
 		spoty--;
 	}
-	int spotx = this->x;
-	int spoty = this->y;
+	 spotx = this->x;
+	 spoty = this->y;
 	spotx--;
 	spoty++;
 	while (spotx >= 0 && spoty < 8) {
@@ -420,8 +420,8 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 		spotx--;
 		spoty++;
 	}
-	int spotx = this->x;
-	int spoty = this->y;
+	 spotx = this->x;
+	 spoty = this->y;
 	spotx--;
 	spoty--;
 	while (spotx >= 0 && spoty >= 0) {
@@ -548,9 +548,114 @@ void Empty::move(Board& board, vector < pair<int8_t, int8_t> >& moves) {}
 	y = 6
 	y = 7
 	*/
-
-bool Board::threatened(int x, int y, char defendingColor){
 	
+/*bool Board::threatened(int x, int y, char defendingColor){
+
+	// FINISHED but crawling with beetlejuices :(
+	
+	// loop to checks all possible knights
+	for(int i = 0; i < 8; ++i){
+		
+		// checks knights up and to left/right
+		if(i < 2){
+			int copy_y = y - 2;
+			if (i == 0) {
+				// checks up left
+				int copy_x = x + -1;
+				if (0 <= copy_x && copy_x <= 7 && 0 <= copy_y &&  copy_y <= 7) {
+					if(this->arr[copy_y][copy_x]->type == 'K' && this->arr[copy_y][copy_x]->color != defendingColor){
+						return true;
+					}
+				}
+				}
+			else{
+				// checks up right
+				int copy_x = x +1;
+				if (0 <= copy_x && copy_x <= 7 && 0 <= copy_y &&  copy_y <= 7) {
+					if(this->arr[copy_y][copy_x]->type == 'K' && this->arr[copy_y][copy_x]->color != defendingColor){
+						return true;
+					}
+				}
+			}
+		}
+		// checks knights right and up left/down right
+		else if(i < 4){
+			int copy_x = x + 2;
+			if (i == 2) {
+				// checks right then up left
+				
+				int copy_y = y -1;
+				if (0 <= copy_x && copy_x <= 7 && 0 <= copy_y &&  copy_y <= 7) {
+					if(this->arr[copy_y][copy_x]->type == 'K' && this->arr[copy_y][copy_x]->color != defendingColor){
+						return true;
+					}
+				}
+				}
+			else{
+				// checks 
+				int copy_y = y +1 ;
+				if (0 <= copy_x && copy_x <= 7 && 0 <= copy_y &&  copy_y <= 7) {
+					if(this->arr[copy_y][copy_x]->type == 'K' && this->arr[copy_y][copy_x]->color != defendingColor){
+						return true;
+					}
+				}
+			}
+		}
+		// checks knights down and then left/right
+		else if(i <6){
+			int copy_y = y + 2;
+			if (i == 4) {
+				// checks down left
+				int copy_x = x - 1;
+				
+				if (0 <= copy_x && copy_x <= 7 && 0 <= copy_y &&  copy_y <= 7) {
+					if(this->arr[copy_y][copy_x]->type == 'K' && this->arr[copy_y][copy_x]->color != defendingColor){
+						return true;
+					}
+				}
+				
+
+
+				}
+			else{
+				// checks down right
+				int copy_x = x +1;
+				if (0 <= copy_x && copy_x <= 7 && 0 <= copy_y &&  copy_y <= 7) {
+					if(this->arr[copy_y][copy_x]->type == 'K' && this->arr[copy_y][copy_x]->color != defendingColor){
+						return true;
+					}
+				}
+			}
+		}
+		// checks knights left and then up left/right
+		else{
+			int copy_x = x - 2;
+			if (i == 6) {
+				// checks left then up
+				
+				int copy_y = y -1;
+				if (0 <= copy_x && copy_x <= 7 && 0 <= copy_y &&  copy_y <= 7) {
+					if(this->arr[copy_y][copy_x]->type == 'K' && this->arr[copy_y][copy_x]->color != defendingColor){
+						return true;
+					}
+				}
+				
+
+
+				}
+			else{
+				// checks left then down
+				int copy_y = y +1 ;
+				if (0 <= copy_x && copy_x <= 7 && 0 <= copy_y &&  copy_y <= 7) {
+					if(this->arr[copy_y][copy_x]->type == 'K' && this->arr[copy_y][copy_x]->color != defendingColor){
+						return true;
+					}
+				}
+			}	
+
+		}
+	}
+
 	// checks for bounds so it can limit the search of pieces and make sure there are no indexes out of bounds. 
 
 	int copy_x = x;
@@ -571,8 +676,6 @@ bool Board::threatened(int x, int y, char defendingColor){
 		--copy_x;
 	}
 	copy_x = x;
-
-	
 
 	while(copy_x <= 7){
 		
@@ -620,10 +723,18 @@ bool Board::threatened(int x, int y, char defendingColor){
 	}
 	copy_y = y;
 
-	// checks left diagonal towards x=0,y=0 for a threat
+	// checks upper left diagonal towards x=0,y=0 for a threat
 
 	while(0 <= copy_x && 0 <= copy_y ){
-		
+
+		// another pawn check for defending white upper left square.
+		if(copy_x == (x-1) && copy_y == (y-1)){
+			if (defendingColor == 'w') {
+				if( this->arr[copy_y][copy_x]->type == 'P' && this->arr[copy_y][copy_x]->color == 'B'){ 
+					return true;
+				}
+			}
+		}
 		if(this->arr[y][x]->color == defendingColor){
 			break;
 		}
@@ -638,10 +749,18 @@ bool Board::threatened(int x, int y, char defendingColor){
 	copy_y = y;
 	copy_x = x;
 
-	// checks right towards x=7,y=0 horizontal for a threat
+	// checks upper right diagonal towards x=7,y=0 horizontal for a threat
 
 	while( 7 >= copy_x && 0 <= copy_y ){
-		
+		// this checks for pawns, only for when the defending color is white.
+		if(copy_x == (x+1) && copy_y == (y-1)){
+			if (defendingColor == 'w') {
+				if( this->arr[copy_y][copy_x]->type == 'P' && this->arr[copy_y][copy_x]->color == 'B'){ 
+					return true;
+				}
+			}
+		}
+
 		if(this->arr[y][x]->color == defendingColor){
 			break;
 		}
@@ -656,9 +775,18 @@ bool Board::threatened(int x, int y, char defendingColor){
 	copy_y = y;
 	copy_x = x;
 
-	// checks right towards x=0,y=7 horizontal for a threat
+	// checks bottom left diagonal towards x=0,y=7 horizontal for a threat
 
 	while( 0 <= copy_x &&  7 >= copy_y ){
+
+		if(copy_x == (x-1) && copy_y == (y+1)){
+			if (defendingColor == 'b') {
+				if( this->arr[copy_y][copy_x]->type == 'P' && this->arr[copy_y][copy_x]->color == 'w'){ 
+					return true;
+				}
+			}
+		}
+			
 		
 		if(this->arr[y][x]->color == defendingColor){
 			break;
@@ -674,10 +802,18 @@ bool Board::threatened(int x, int y, char defendingColor){
 	copy_y = y;
 	copy_x = x;
 
-	// checks right horizontal towards x=7, y=7 for a threat
+	// checks bottom right horizontal towards x=7, y=7 for a threat
 
 	while( 7 >= copy_x && 7 >= copy_y ){
 		
+		if(copy_x == (x+1) && copy_y == (y-1)){
+			if (defendingColor == 'b') {
+				if( this->arr[copy_y][copy_x]->type == 'P' && this->arr[copy_y][copy_x]->color == 'w'){ 
+					return true;
+				}
+			}
+		}
+
 		if(this->arr[y][x]->color == defendingColor){
 			break;
 		}
@@ -689,7 +825,137 @@ bool Board::threatened(int x, int y, char defendingColor){
 		--copy_y;
 		++copy_x;
 	}
+	return false;
+	
+}*/
 
-	// still need to check for nearby pawn
-	// and horses
+bool Board::threatened(int x, int y, char defendingColor) {
+	// 8 while loops
+	// 8 knight checks
+	int8_t xLook = x;
+	int8_t yLook = y;
+	// LEFT WHILE LOOP
+	while (xLook >= 0) {
+		if (arr[y][xLook]->type == 'E')// most likely
+			continue;
+		else if (arr[y][xLook]->color == defendingColor || (arr[y][xLook]->type != 'R' && arr[y][xLook]->type != 'Q') && (arr[y][xLook]->type != 'K' || x - xLook > 1))// something in the way, break
+			break;
+		else
+			return true;
+
+		xLook--;
+	}
+	xLook = x;
+	// RIGHT WHILE LOOP
+	while (xLook <= 7) {
+		if (arr[y][xLook]->type == 'E')
+			continue;
+		else if (arr[y][xLook]->color == defendingColor || (arr[y][xLook]->type != 'R' && arr[y][xLook]->type != 'Q' && (arr[y][xLook]->type != 'K' || xLook - x > 1)))
+			break;
+		else
+			return true;
+
+		xLook++;
+	}
+	xLook = x;
+	// UP WHILE LOOP
+	while (yLook >= 0) {
+		if (arr[yLook][x]->type == 'E')
+			continue;
+		else if (arr[yLook][x]->color == defendingColor || (arr[yLook][x]->type != 'R' && arr[yLook][x]->type != 'Q' && (arr[yLook][x]->type != 'K' || y - yLook > 1)))
+			break;
+		else
+			return true;
+
+		yLook--;
+	}
+	yLook = y;
+	// DOWN WHILE LOOP
+	while (yLook <= 7) {
+		if (arr[yLook][x]->type == 'E')
+			continue;
+		else if (arr[yLook][x]->color == defendingColor || (arr[yLook][x]->type != 'R' && arr[yLook][x]->type != 'Q' && (arr[yLook][x]->type != 'K' || yLook - y > 1)))
+			break;
+		else
+			return true;
+
+		yLook++;
+	}
+	yLook = y;
+	xLook = x;
+	// DOWN RIGHT WHILE LOOP
+	while (yLook <= 7 && xLook <= 7) {
+		if (arr[yLook][xLook]->type == 'E')
+			continue;
+		else if (arr[yLook][xLook]->color == defendingColor || (arr[yLook][xLook]->type != 'B' && arr[yLook][xLook]->type != 'Q' && (arr[yLook][xLook]->type != 'K' || yLook - y > 1 || xLook - x > 1)))
+			break;
+		else
+			return true;
+		yLook++;
+		xLook++;
+	}
+	yLook = y;
+	xLook = x;
+	// DOWN LEFT WHILE LOOP
+	while (yLook <= 7 && xLook >= 0) {
+		if (arr[yLook][xLook]->type == 'E')
+			continue;
+		else if (arr[yLook][xLook]->color == defendingColor || (arr[yLook][xLook]->type != 'B' && arr[yLook][xLook]->type != 'Q' && (arr[yLook][xLook]->type != 'K' || yLook - y > 1 || x - xLook > 1)))
+			break;
+		else
+			return true;
+		yLook++;
+		xLook--;
+	}
+	yLook = y;
+	xLook = x;
+	// UP RIGHT WHILE LOOP
+	while (yLook >= 0 && xLook <= 7) {
+		if (arr[yLook][xLook]->type == 'E')
+			continue;
+		else if (arr[yLook][xLook]->color == defendingColor || (arr[yLook][xLook]->type != 'B' && arr[yLook][xLook]->type != 'Q' && (arr[yLook][xLook]->type != 'K' || y - yLook > 1 || xLook - x > 1)))
+			break;
+		else
+			return true;
+		yLook--;
+		xLook++;
+	}
+	yLook = y;
+	xLook = x;
+	// UP LEFT WHILE LOOP
+	while (yLook >= 0 && xLook >= 0) {
+		if (arr[yLook][xLook]->type == 'E')
+			continue;
+		else if (arr[yLook][xLook]->color == defendingColor || (arr[yLook][xLook]->type != 'B' && arr[yLook][xLook]->type != 'Q' && (arr[yLook][xLook]->type != 'K' || y - yLook > 1 || x - xLook > 1)))
+			break;
+		else
+			return true;
+		yLook--;
+		xLook--;
+	}
+
+	// 8 Knight checks
+	if (y < 6 && x < 7 && arr[y + 2][x + 1]->type == 'N' && arr[y + 2][x + 1]->color != defendingColor)
+		return true;
+	if (y < 7 && x < 6 && arr[y + 1][x + 2]->type == 'N' && arr[y + 1][x + 2]->color != defendingColor)
+		return true;
+
+	if (y > 1 && x < 7 && arr[y - 2][x + 1]->type == 'N' && arr[y - 2][x + 1]->color != defendingColor)
+		return true;
+	if (y > 0 && x < 6 && arr[y - 1][x + 2]->type == 'N' && arr[y - 1][x + 2]->color != defendingColor)
+		return true;
+
+	if (y > 1 && x > 0 && arr[y - 2][x - 1]->type == 'N' && arr[y - 2][x - 1]->color != defendingColor)
+		return true;
+	if (y > 0 && x > 1 && arr[y - 1][x - 2]->type == 'N' && arr[y - 1][x - 2]->color != defendingColor)
+		return true;
+
+	if (y < 6 && x > 0 && arr[y + 2][x - 1]->type == 'N' && arr[y + 2][x - 1]->color != defendingColor)
+		return true;
+	if(y < 7 && x > 1 && arr[y + 1][x - 2]->type == 'N' && arr[y + 1][x - 2]->color != defendingColor)
+		return true;
+	
+	// PASSED ALL CHECKS
+	return false;
+
 }

@@ -2,7 +2,11 @@
 #include "position.h"
 #include "swapping.h"
 
-double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& swapBuffer, vector<Move>& moveBuffer, long int color, double value, int turn) {// this will swap
+double k = 1;
+int moveschecked = 0;
+int movesCut = 0;
+
+double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& swapBuffer, vector<Move>& moveBuffer, int color, double value, int turn, double alpha, double beta) {// this will swap
 	// if color is odd, black
 	// if color is even, white
 	char col = 'b';
@@ -14,14 +18,14 @@ double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& sw
 
 
 	vector <Move> moves;
-	moveMaker(board, moves, color);
+	moveMaker(board, moves, col);
 	// now moves is full of different moves
 	double threshold = 1000000000;
 	if (color % 2 == 0)// if white
 		threshold *= -1;
 	double result = 0;
 	bool firstPass = true;
-	for (int i = 0; i < moves.size(); i++) {
+	for (unsigned int i = 0; i < moves.size(); i++) {
 		// two values at each point
 		// immediate position -- can be calculated up front
 		// leaf position -- this is the most optimal of all the leaf nodes
@@ -32,24 +36,28 @@ double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& sw
 		swapBuffer[depth] = board.arr[moves[i].finaly][moves[i].finalx];//captured piece
 		// SWAP
 
-
+		if (beta <= alpha)
+			return result;
 		if (firstPass || worthwhile(position(board,turn,col), result,color)) {
 			moveschecked++;
-			result = boardSwapper(board, searchDepth, depth + 1, swapBuffer, moveBuffer, color + 1, value, turn+1);
+			result = boardSwapper(board, searchDepth, depth + 1, swapBuffer, moveBuffer, color + 1, value, turn+1,alpha,beta);
 			firstPass = false;
 		}
 		else {
-			movesCut++;
+			movesCut++; // DIAGNOSTICS
 		}
-			
-
+		if (color % 2 == 1 && result < beta)// black edits the beta value
+			beta = result; // For black
+		if (color % 2 == 0 && result > alpha)
+			alpha = result; // For white
 		if (color % 2 == 1 && result < threshold){// search for a minimum value
-			moveBuffer[depth] = moves[i];
+			moveBuffer[depth] = moves[i]; // black attempts to minimize value
 			threshold = result;
+			
 		}
 			
 		else if (color % 2 == 0 && result > threshold) {
-			moveBuffer[depth] = moves[i];
+			moveBuffer[depth] = moves[i]; // white attempts to maximize
 			threshold = result;
 		}
 			
@@ -67,13 +75,15 @@ double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& sw
 
 }
 
-void bestChoice(Board &board, int searchDepth) {
-
+void bestChoice(Board &board, int searchDepth, char color, int turn) {
+	int col = 0;
+	if (color == 'b')
+		col++;
 	vector<Move> moveBuffer(searchDepth);
 	vector<Piece*> swapBuffer(searchDepth);// this holds pieces that will be swapped into a buffer. Then we don't have to copy a bunch of boards
 	for (int i = 0; i < searchDepth; i++)
 		swapBuffer[i] = new Empty('E', -1, -1);
-	boardSwapper(searchDepth, 0, swapBuffer);
+	boardSwapper(board,searchDepth, 0, swapBuffer,moveBuffer,col,0,turn,-1000000000,1000000000);
 	// this will edit the board into the proper move
 	// still need to delete swap buffer
 	for (int i = 0; i < searchDepth; i++)

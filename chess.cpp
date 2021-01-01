@@ -9,6 +9,7 @@
 
 using namespace std;
 
+
 int main() {
 
 	cout << "Please enter the search depth: (Somewhere between 2 and 5)" << endl;
@@ -27,11 +28,12 @@ int main() {
 	Board board;
 	int turn = 0;
 	while (true) {
+		cout << "turn #" << turn << '\n';
 		board.Print();
 		if (turn % 2 == 0) {// it's white's turn
 			
 			while (whiteUser) {
-				Move movie = translate(cin);
+				Move movie = translate();
 				if (!swapBoards(board, movie)) {// go through with the move
 					Piece* swappedPiece = new Empty('E', -1, -1);
 					Piece* temp = swappedPiece;
@@ -47,12 +49,12 @@ int main() {
 
 			}
 			if (!whiteUser)
-				bestChoice(board, searchDepth);
+				bestChoice(board, searchDepth,'w',turn);
 		}
 		else {
 
 			while (blackUser) {
-				Move movie = translate(cin);
+				Move movie = translate();
 				if (!swapBoards(board, movie)) {// go through with the move
 					Piece* swappedPiece = new Empty('E', -1, -1);
 					Piece* temp = swappedPiece;
@@ -67,12 +69,12 @@ int main() {
 				}
 			}
 			if (!blackUser)
-				bestChoice(board, searchDepth);
+				bestChoice(board, searchDepth,'b',turn);
 
 
 		}
 
-
+		turn++;
 	}
 
 

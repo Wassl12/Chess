@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />
+    <Text Include="input.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

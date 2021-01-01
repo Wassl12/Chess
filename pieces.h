@@ -4,23 +4,8 @@
 #include <unordered_map>
 
 using namespace std;
-class Board {
-public:
-	std::vector <std::vector <Piece* > > arr; // the physical board which contains pointers to pieces
-	std::unordered_map<std::string, vector<Piece*> > blackPieceMap;// pieces black has taken
-	std::unordered_map<std::string, vector<Piece*> > whitePieceMap; // pieces that white has taken
-	Piece* bKing;
-	Piece* wKing;
-	Board();
-	void Print();
-	void printChar(int row,int column);
-	bool isLegal(int x, int y, char type);// helper function to avoid segmentation faults more making moves
-	bool threatened(int x, int y, char defendingColor);//
-	
-	
-	
-	// no deconstructor 
-};
+class Piece;
+class Board;
 
 class Piece {
 public:
@@ -45,7 +30,23 @@ public:
 	Piece(char color, int8_t x, int8_t y,int valin);
 
 };
+class Board {
+public:
+	std::vector <std::vector <Piece* > > arr; // the physical board which contains pointers to pieces
+	std::unordered_map<std::string, vector<Piece*> > blackPieceMap;// pieces black has taken
+	std::unordered_map<std::string, vector<Piece*> > whitePieceMap; // pieces that white has taken
+	Piece* bKing;
+	Piece* wKing;
+	Board();
+	void Print();
+	void printChar(int row, int column);
+	bool isLegal(int x, int y, char type);// helper function to avoid segmentation faults more making moves
+	bool threatened(int x, int y, char defendingColor);//
 
+
+
+	// no deconstructor 
+};
 class Pawn :  public Piece {
 public:
 	

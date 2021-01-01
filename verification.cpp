@@ -5,7 +5,7 @@
 #include "verification.h"
 #include "pieces.h"
 #include "position.h"
-
+#include <iostream>
 
 
 void verify(Board &board, vector <Move>& moves) {
@@ -55,5 +55,8 @@ void moveMaker(Board &board, vector <Move>& moves, char color) {
 
 		}
 	}
-	
+	for (auto mov : moves) {
+		cout << mov.pieceType << ' ' << char(mov.startx + '0') << ' ' << char(mov.starty + '0') << ' ' << char(mov.finalx + '0') << ' ' << char(mov.finaly + '0') << '\n';
+
+	}
 }

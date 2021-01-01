@@ -50,14 +50,14 @@ double position(Board &board, int turn, char whoseMove) {
 
 	// add piece value
 	for (auto vec : board.whitePieceMap) {
-		for (int8_t index = 0; index < vec.second.size(); index++ ) {
+		for (int8_t index = 0; index < int8_t(vec.second.size()); index++ ) {
 			score += vec.second[index]->value;
 		}
 	}
 
 	for (auto vec : board.blackPieceMap) {
 
-		for (int8_t index = 0; index < vec.second.size(); index++ ) {
+		for (int8_t index = 0; index < int8_t(vec.second.size()); index++ ) {
 			score -= vec.second[index]->value;
 		}
 
@@ -82,14 +82,14 @@ double position(Board &board, int turn, char whoseMove) {
 	
 	
 
-	
+	return score;
 
 }
 bool hanging(string pieceType,Board &board, int turn, char whoseMove) {
 
 	if (whoseMove == 'w') {
 		
-		for (int i = 0; i < board.blackPieceMap[pieceType].size(); i++) {
+		for (unsigned int i = 0; i < board.blackPieceMap[pieceType].size(); i++) {
 			int8_t pieceX = board.blackPieceMap[pieceType][i]->x;
 			int8_t pieceY = board.blackPieceMap[pieceType][i]->y;
 			if (board.threatened(pieceX, pieceY, 'b')) {
@@ -99,7 +99,7 @@ bool hanging(string pieceType,Board &board, int turn, char whoseMove) {
 		}
 	}
 	else {
-		for (int i = 0; i < board.whitePieceMap[pieceType].size(); i++) {
+		for (unsigned int i = 0; i < board.whitePieceMap[pieceType].size(); i++) {
 			int8_t pieceX = board.whitePieceMap[pieceType][i]->x;
 			int8_t pieceY = board.whitePieceMap[pieceType][i]->y;
 			if (board.threatened(pieceX, pieceY, 'w')) {
