@@ -4,7 +4,7 @@
 
 
 
-double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& swapBuffer, vector<Move>& moveBuffer, int color, double value, int turn, double alpha, double beta);
+double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& swapBuffer, vector<Move>& moveBuffer, int turn, double alpha, double beta);
 
 void bestChoice(Board& board, int searchDepth, char color, int turn);
 

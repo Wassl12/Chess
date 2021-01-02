@@ -11,7 +11,7 @@ Bishop::Bishop(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,3 
 
 Queen::Queen(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,9 } { type = 'Q'; }
 
-King::King(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,UINT32_MAX/2} { type = 'K'; }
+King::King(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,10000} { type = 'K'; }
 
 Pawn::Pawn(char colorin, int8_t xin, int8_t yin) : Piece{ colorin,xin,yin,1 } { type = 'P'; }
 
@@ -83,20 +83,20 @@ Board::Board() : arr(8,vector<Piece*>(8)) {
 			arr[row][column] = new Empty('e',0, 0);
 		}
 	}
-	arr[7][0] = new Rook('w',7, 0);
+	arr[7][0] = new Rook('w',0, 7);
 	whitePieceMap["Rook"].push_back(arr[7][0]);
-	arr[7][1] = new Knight('w', 7, 1);
+	arr[7][1] = new Knight('w', 1, 7);
 	whitePieceMap["Knight"].push_back(arr[7][1]);
-	arr[7][2] = new Bishop('w', 7, 2);
+	arr[7][2] = new Bishop('w', 2, 7);
 	whitePieceMap["Bishop"].push_back(arr[7][2]);
-	arr[7][3] = new Queen('w', 7, 3);
+	arr[7][3] = new Queen('w', 3, 7);
 	whitePieceMap["Queen"].push_back(arr[7][3]);
-	arr[7][4] = new King('w', 7, 4);
+	arr[7][4] = new King('w', 4, 7);
 	whitePieceMap["King"].push_back(arr[7][4]);
 	wKing = arr[7][4];
-	arr[7][5] = new Bishop('w', 7, 5);
+	arr[7][5] = new Bishop('w', 5, 7);
 	whitePieceMap["Bishop"].push_back(arr[7][5]);
-	arr[7][6] = new Knight('w', 7, 6);
+	arr[7][6] = new Knight('w', 6, 7);
 	whitePieceMap["Knight"].push_back(arr[7][6]);
 	arr[7][7] = new Rook('w', 7, 7);
 	whitePieceMap["Rook"].push_back(arr[7][7]);
@@ -367,7 +367,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 			moves.push_back({ spoty,this->x });
 			break;
 		}
-		spoty++;
+		spoty--;
 	}
 	////////// END ROOK ///////////
 
@@ -433,7 +433,7 @@ void Queen::move(Board &board, vector <pair <int8_t, int8_t> > & moves) {
 			moves.push_back({ spoty,spotx });
 			break;
 		}
-		spotx++;
+		spotx--;
 		spoty--;
 	}
 	////////// END BISHOP STYLE MOVES ///////////
@@ -515,7 +515,7 @@ void King::move(Board &board, vector <pair <int8_t, int8_t > > &moves) {
 		moves.push_back({ this->y + 1,this->x });
 	// right
 	if (board.isLegal(this->y, this->x+1, this->color))
-		moves.push_back({ this->y + 1,this->x+1 });
+		moves.push_back({ this->y,this->x+1 });
 	// right up
 	if (board.isLegal(this->y - 1, this->x + 1, this->color))
 		moves.push_back({ this->y - 1,this->x + 1 });
@@ -829,109 +829,95 @@ void Empty::move(Board& board, vector < pair<int8_t, int8_t> >& moves) {}
 	
 }*/
 
-bool Board::threatened(int x, int y, char defendingColor) {
+bool Board::threatened(int y, int x, char defendingColor) {
 	// 8 while loops
 	// 8 knight checks
 	int8_t xLook = x;
 	int8_t yLook = y;
 	// LEFT WHILE LOOP
-	while (xLook >= 0) {
+	while (--xLook >= 0) {
 		if (arr[y][xLook]->type == 'E')// most likely
 			continue;
 		else if (arr[y][xLook]->color == defendingColor || (arr[y][xLook]->type != 'R' && arr[y][xLook]->type != 'Q') && (arr[y][xLook]->type != 'K' || x - xLook > 1))// something in the way, break
 			break;
 		else
 			return true;
-
-		xLook--;
+		
+		
 	}
 	xLook = x;
 	// RIGHT WHILE LOOP
-	while (xLook <= 7) {
+	while (++xLook <= 7) {
 		if (arr[y][xLook]->type == 'E')
 			continue;
 		else if (arr[y][xLook]->color == defendingColor || (arr[y][xLook]->type != 'R' && arr[y][xLook]->type != 'Q' && (arr[y][xLook]->type != 'K' || xLook - x > 1)))
 			break;
 		else
 			return true;
-
-		xLook++;
 	}
 	xLook = x;
 	// UP WHILE LOOP
-	while (yLook >= 0) {
+	while (--yLook >= 0) {
 		if (arr[yLook][x]->type == 'E')
 			continue;
 		else if (arr[yLook][x]->color == defendingColor || (arr[yLook][x]->type != 'R' && arr[yLook][x]->type != 'Q' && (arr[yLook][x]->type != 'K' || y - yLook > 1)))
 			break;
 		else
 			return true;
-
-		yLook--;
 	}
 	yLook = y;
 	// DOWN WHILE LOOP
-	while (yLook <= 7) {
+	while (++yLook <= 7) {
 		if (arr[yLook][x]->type == 'E')
 			continue;
 		else if (arr[yLook][x]->color == defendingColor || (arr[yLook][x]->type != 'R' && arr[yLook][x]->type != 'Q' && (arr[yLook][x]->type != 'K' || yLook - y > 1)))
 			break;
 		else
 			return true;
-
-		yLook++;
 	}
 	yLook = y;
 	xLook = x;
 	// DOWN RIGHT WHILE LOOP
-	while (yLook <= 7 && xLook <= 7) {
+	while (++yLook <= 7 && ++xLook <= 7) {
 		if (arr[yLook][xLook]->type == 'E')
 			continue;
 		else if (arr[yLook][xLook]->color == defendingColor || (arr[yLook][xLook]->type != 'B' && arr[yLook][xLook]->type != 'Q' && (arr[yLook][xLook]->type != 'K' || yLook - y > 1 || xLook - x > 1)))
 			break;
 		else
 			return true;
-		yLook++;
-		xLook++;
 	}
 	yLook = y;
 	xLook = x;
 	// DOWN LEFT WHILE LOOP
-	while (yLook <= 7 && xLook >= 0) {
+	while (++yLook <= 7 && --xLook >= 0) {
 		if (arr[yLook][xLook]->type == 'E')
 			continue;
 		else if (arr[yLook][xLook]->color == defendingColor || (arr[yLook][xLook]->type != 'B' && arr[yLook][xLook]->type != 'Q' && (arr[yLook][xLook]->type != 'K' || yLook - y > 1 || x - xLook > 1)))
 			break;
 		else
 			return true;
-		yLook++;
-		xLook--;
 	}
 	yLook = y;
 	xLook = x;
 	// UP RIGHT WHILE LOOP
-	while (yLook >= 0 && xLook <= 7) {
+	while (--yLook >= 0 && ++xLook <= 7) {
 		if (arr[yLook][xLook]->type == 'E')
 			continue;
 		else if (arr[yLook][xLook]->color == defendingColor || (arr[yLook][xLook]->type != 'B' && arr[yLook][xLook]->type != 'Q' && (arr[yLook][xLook]->type != 'K' || y - yLook > 1 || xLook - x > 1)))
 			break;
 		else
 			return true;
-		yLook--;
-		xLook++;
 	}
 	yLook = y;
 	xLook = x;
 	// UP LEFT WHILE LOOP
-	while (yLook >= 0 && xLook >= 0) {
+	while (--yLook >= 0 && --xLook >= 0) {
 		if (arr[yLook][xLook]->type == 'E')
 			continue;
 		else if (arr[yLook][xLook]->color == defendingColor || (arr[yLook][xLook]->type != 'B' && arr[yLook][xLook]->type != 'Q' && (arr[yLook][xLook]->type != 'K' || y - yLook > 1 || x - xLook > 1)))
 			break;
 		else
 			return true;
-		yLook--;
-		xLook--;
 	}
 
 	// 8 Knight checks
@@ -957,5 +943,52 @@ bool Board::threatened(int x, int y, char defendingColor) {
 	
 	// PASSED ALL CHECKS
 	return false;
+
+}
+
+void Board::castle(int type, char color) {// -1 for kingside, -2 for queenside
+
+	if (type == -1) {
+		if (color == 'b') {
+			std::swap(arr[0][4], arr[0][6]);
+			std::swap(arr[0][7], arr[0][5]);
+		}
+		else {
+			std::swap(arr[7][4], arr[7][6]);
+			std::swap(arr[7][7], arr[7][5]);
+		}
+		
+	}
+
+
+	else {// QUEENSIDE
+		if (color == 'b') {
+			std::swap(arr[0][4], arr[0][2]);
+			std::swap(arr[0][0], arr[0][3]);
+		}
+		else {
+			std::swap(arr[7][4], arr[7][2]);
+			std::swap(arr[7][0], arr[7][3]);
+		}
+	}
+
+}
+
+void Board::promotion(int8_t y, int8_t x, vector<Piece*>& swapBuffer) {
+	 
+	if (y == 0) {
+		
+		Piece* queen = new Queen('w', int8_t(x), int8_t(y));
+		std::swap(arr[y][x],queen);
+		delete queen;
+	}
+	else {
+		Piece* queen = new Queen('b', int8_t(x), int8_t(y));
+		std::swap(arr[y][x], queen);
+		delete queen;
+	}
+		
+
+
 
 }

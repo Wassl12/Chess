@@ -23,7 +23,7 @@ void Board::Print() {
 		}
 		for (int r = 0; r <= 80; r++) {
 			if (r % 10 == 4)
-				printChar(i,r++/11);
+				printChar(i,r++/10);
 			else if (r % 10 == 0)
 				std::cout << '|';
 			else

@@ -42,7 +42,9 @@ public:
 	void printChar(int row, int column);
 	bool isLegal(int x, int y, char type);// helper function to avoid segmentation faults more making moves
 	bool threatened(int x, int y, char defendingColor);//
-
+	void castle(int type, char color);
+	void promotion(int8_t y, int8_t x, vector<Piece*>& swapBuffer);
+	bool blockedPawn(Piece* piece);
 
 
 	// no deconstructor 

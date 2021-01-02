@@ -21,6 +21,7 @@ int main() {
 	cout << "Please type moves as <Piece> <StartFile> <StartRank> <EndFile> <EndRank>" << endl;
 	bool whiteUser = false;
 	bool blackUser = false;
+	
 	if (choice[0] == 'w' || choice[0] == 'W')
 		whiteUser = true;
 	else if (choice[0] == 'b' || choice[0] == 'B')
@@ -68,8 +69,17 @@ int main() {
 					cout << "Illegal move... try another one" << endl;
 				}
 			}
-			if (!blackUser)
-				bestChoice(board, searchDepth,'b',turn);
+			if (!blackUser) {
+				if (turn == 1) {
+					std::swap(board.arr[1][3], board.arr[2][3]);
+				}
+				else if (turn == 3) {
+					std::swap(board.arr[1][4], board.arr[3][4]);
+				}
+				else
+					bestChoice(board, searchDepth, 'b', turn);
+			}
+				
 
 
 		}
