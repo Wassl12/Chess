@@ -1,1 +1,1 @@
-9 white pawn d 2 d 4 pawn e 2 e 3
+3 white pawn d 2 d 4 pawn e 2 e 3

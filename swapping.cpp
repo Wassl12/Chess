@@ -17,7 +17,7 @@ double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& sw
 			cout << mov.pieceType << "from " << int(mov.startx) << ' ' << int(mov.starty) << " to " << int(mov.finalx) << ' ' << int(mov.finaly) << '\n';
 		}*/
 		bool hang = false;
-		double result = (board,turn,col, hang);
+		double result = position(board,turn,col, hang);
 		if (!hang)
 			return result;
 		// otherwise it becomes unattainable to check for huge trades of material... and this can confound the position metric
@@ -45,14 +45,14 @@ double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& sw
 			board.castle(moves[i].finalx, col);
 		}
 		else if ((moves[i].finaly == 0 || moves[i].finaly == 7) && moves[i].pieceType == 'P') {
-			board.arr[moves[i].starty][moves[i].startx]->moved = true;
-			Piece* temp = board.arr[moves[i].starty][moves[i].startx];
+			
+			
 			board.arr[moves[i].starty][moves[i].startx] = swapBuffer[depth];
 			swapBuffer[depth] = board.arr[moves[i].finaly][moves[i].finalx];
 			board.arr[moves[i].finaly][moves[i].finalx] = new Queen(col,moves[i].finalx,moves[i].finaly);
 			board.arr[moves[i].finaly][moves[i].finalx]->x = moves[i].finalx;
 			board.arr[moves[i].finaly][moves[i].finalx]->y = moves[i].finaly;
-			delete temp;
+			
 		}
 		
 		else {// SWAP
@@ -69,8 +69,9 @@ double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& sw
 			
 		if (worthwhile(0, result,turn)) {
 			moveschecked++;
-			result = boardSwapper(board, searchDepth, depth + 1, swapBuffer, moveBuffer, turn+1,alpha,beta);
 			//board.Print();
+			result = boardSwapper(board, searchDepth, depth + 1, swapBuffer, moveBuffer, turn+1,alpha,beta);
+			
 			firstPass = false;
 		}
 		else {
@@ -130,7 +131,8 @@ void bestChoice(Board &board, int searchDepth, char color, int turn) {
 	vector<Piece*> swapBuffer(searchDepth);// this holds pieces that will be swapped into a buffer. Then we don't have to copy a bunch of boards
 	for (int i = 0; i < searchDepth; i++)
 		swapBuffer[i] = new Empty('E', -1, -1);
-	boardSwapper(board,searchDepth, 0, swapBuffer,moveBuffer,turn,-1000000000,1000000000);
+	double result = boardSwapper(board,searchDepth, 0, swapBuffer,moveBuffer,turn,-1000000000,1000000000);
+	cout << "The board's position is valued at: " << result << '\n';
 	// this will edit the board into the proper move
 	// still need to delete swap buffer
 	for (int i = 0; i < searchDepth; i++)

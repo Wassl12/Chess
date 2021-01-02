@@ -118,7 +118,7 @@ void Pawn::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 	y = 7
 	*/
 	if (this->color == 'b') {
-		if (board.isLegal(this->y + 1, this->x, this->color))
+		if (board.isLegal(this->y + 1, this->x, this->color) && board.arr[y + 1][x]->color != 'w')
 			moves.push_back({ y + 1,x });
 		if (board.isLegal(this->y+2,this->x,this->color) && !this->moved)
 			moves.push_back({ y + 2,x });
@@ -128,7 +128,7 @@ void Pawn::move(Board& board, vector <pair <int8_t, int8_t> > &moves) {
 			moves.push_back({ y + 1,x - 1 });
 	}
 	else {
-		if (board.isLegal(this->y-1,this->x,this->color))
+		if (board.isLegal(this->y-1,this->x,this->color) && board.arr[y-1][x]->color != 'b')
 			moves.push_back({ y - 1,x });
 		if (board.isLegal(this->y-2,this->x,this->color) && !this->moved)
 			moves.push_back({ y - 2,x });
@@ -952,10 +952,36 @@ void Board::castle(int type, char color) {// -1 for kingside, -2 for queenside
 		if (color == 'b') {
 			std::swap(arr[0][4], arr[0][6]);
 			std::swap(arr[0][7], arr[0][5]);
+			arr[0][6]->x = 6;
+			arr[0][6]->y = 0;
+			arr[0][5]->x = 5;
+			arr[0][5]->y = 0;
+			arr[0][6]->moved = !(arr[0][6]->moved);
+			arr[0][5]->moved = !(arr[0][5]->moved);
+
+			arr[0][4]->x = 4;
+			arr[0][4]->y = 0;
+			arr[0][7]->x = 7;
+			arr[0][7]->y = 0;
+			arr[0][4]->moved = !(arr[0][4]->moved);
+			arr[0][7]->moved = !(arr[0][7]->moved);
 		}
 		else {
-			std::swap(arr[7][4], arr[7][6]);
-			std::swap(arr[7][7], arr[7][5]);
+			std::swap(arr[7][4], arr[7][6]);// 7 6 is the king now
+			std::swap(arr[7][7], arr[7][5]);// 7 5 is the rook now
+			arr[7][6]->x = 6;
+			arr[7][6]->y = 0;
+			arr[7][5]->x = 5;
+			arr[7][5]->y = 0;
+			arr[7][6]->moved = !(arr[7][6]->moved);
+			arr[7][5]->moved = !(arr[7][5]->moved);
+
+			arr[7][4]->x = 4;
+			arr[7][4]->y = 0;
+			arr[7][7]->x = 7;
+			arr[7][7]->y = 0;
+			arr[7][4]->moved = !(arr[7][4]->moved);
+			arr[7][7]->moved = !(arr[7][7]->moved);
 		}
 		
 	}
@@ -965,10 +991,36 @@ void Board::castle(int type, char color) {// -1 for kingside, -2 for queenside
 		if (color == 'b') {
 			std::swap(arr[0][4], arr[0][2]);
 			std::swap(arr[0][0], arr[0][3]);
+			arr[0][2]->x = 2;
+			arr[0][2]->y = 0;
+			arr[0][3]->x = 3;
+			arr[0][3]->y = 0;
+			arr[0][2]->moved = !(arr[0][2]->moved);
+			arr[0][3]->moved = !(arr[0][3]->moved);
+
+			arr[0][0]->x = 0;
+			arr[0][0]->y = 0;
+			arr[0][4]->x = 4;
+			arr[0][4]->y = 0;
+			arr[0][0]->moved = !(arr[0][0]->moved);
+			arr[0][4]->moved = !(arr[0][4]->moved);
 		}
 		else {
 			std::swap(arr[7][4], arr[7][2]);
 			std::swap(arr[7][0], arr[7][3]);
+			arr[7][2]->x = 2;
+			arr[7][2]->y = 0;
+			arr[7][3]->x = 3;
+			arr[7][3]->y = 0;
+			arr[7][2]->moved = !(arr[7][2]->moved);
+			arr[7][3]->moved = !(arr[7][3]->moved);
+
+			arr[7][0]->x = 0;
+			arr[7][0]->y = 0;
+			arr[7][4]->x = 4;
+			arr[7][4]->y = 0;
+			arr[7][0]->moved = !(arr[7][0]->moved);
+			arr[7][4]->moved = !(arr[7][4]->moved);
 		}
 	}
 

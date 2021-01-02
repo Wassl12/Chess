@@ -46,14 +46,15 @@ double position(Board &board, int turn, char whoseMove, bool &hang) {
 	const double blockedPawnPenalty = -.2;
 	const double rookMoveValue = .05;
 	const double queenMoveValue = 0.1;
-	const double bishopMoveValue = 0.03;
+	const double bishopMoveValue = 0.04;
 	const double knightMoveValue = 0.02;
 	const double outpostValue = 0.5;
 	const double bishopsAliveValue = 1.0;
-	const double rookTrapped = -1.2;
-	const double bishopTrapped = -0.7;
-	const double QueenTrapped = -1.5;
-	const double knightTrapped = -0.5;
+	const double rookTrapped = -0.15;
+	const double bishopTrapped = -0.15;
+	const double QueenTrapped = -0.5;
+	const double knightTrapped = -0.2;
+	
 	
 
 	double score = 0;
@@ -139,14 +140,37 @@ double position(Board &board, int turn, char whoseMove, bool &hang) {
 		score -= bishopsAliveValue;
 	// BISHOPS ALIVE //
 
-	
+	//PAWN CAPTURES// -- if pawn can capture left or right a non-pawn... big bonus!
+	/*for (auto it = board.whitePieceMap["Pawn"].begin(); it != board.whitePieceMap["Pawn"].end(); it++) {
+		vector <pair <int8_t, int8_t > > moves;
+		(*it)->move(board, moves);
+		for (auto pear : moves) {
+			if (pear.second != (*it)->x && board.arr[pear.first][pear.second]->type != 'P')// capture a non-pawn
+				score += (board.arr[pear.first][pear.second]->value - 1);
+		}
+
+	}
+	for (auto it = board.blackPieceMap["Pawn"].begin(); it != board.blackPieceMap["Pawn"].end(); it++) {
+		vector <pair <int8_t, int8_t > > moves;
+		(*it)->move(board, moves);
+		for (auto pear : moves) {
+			if (pear.second != (*it)->x && board.arr[pear.first][pear.second]->type != 'P')// capture a non-pawn
+				score -= (board.arr[pear.first][pear.second]->value - 1);
+		}
+	}*/
+	// PAWN CAPTURES //
 	
 
 
-	std::cout << "Score at this leaf node: " << score << '\n';
+	//std::cout << "Score at this leaf node: " << score << '\n';
 	return score;
 
 }
+
+
+
+
+
 bool hanging(string pieceType,Board &board, int turn, char whoseMove) {
 
 	if (whoseMove == 'w') {
@@ -154,7 +178,7 @@ bool hanging(string pieceType,Board &board, int turn, char whoseMove) {
 		for (unsigned int i = 0; i < board.blackPieceMap[pieceType].size(); i++) {
 			int8_t pieceX = board.blackPieceMap[pieceType][i]->x;
 			int8_t pieceY = board.blackPieceMap[pieceType][i]->y;
-			if (board.threatened(pieceX, pieceY, 'b') && !board.threatened(pieceX, pieceY, 'w')) {
+			if (board.threatened(pieceY, pieceX, 'b')) {
 				return true;
 			}
 			
@@ -164,7 +188,7 @@ bool hanging(string pieceType,Board &board, int turn, char whoseMove) {
 		for (unsigned int i = 0; i < board.whitePieceMap[pieceType].size(); i++) {
 			int8_t pieceX = board.whitePieceMap[pieceType][i]->x;
 			int8_t pieceY = board.whitePieceMap[pieceType][i]->y;
-			if (board.threatened(pieceX, pieceY, 'w') && !board.threatened(pieceX, pieceY, 'b')) {
+			if (board.threatened(pieceY, pieceX, 'w')) {
 				return true;
 			}
 			
@@ -176,12 +200,12 @@ bool hanging(string pieceType,Board &board, int turn, char whoseMove) {
 bool Board::blockedPawn(Piece* piece) {
 	char color = piece->color;
 	if (color == 'b') {
-		if (arr[piece->x][piece->y + 1]->type != 'E' && (piece->x == 7 || arr[piece->x + 1][piece->y + 1]->color != 'w') && (piece->x == 0 || arr[piece->x - 1][piece->y + 1]->color != 'w'))
+		if (arr[piece->y+1][piece->x]->type != 'E' && (piece->x == 7 || arr[piece->y + 1][piece->x + 1]->color != 'w') && (piece->x == 0 || arr[piece->y + 1][piece->x - 1]->color != 'w'))
 			return true;
 	}
 	else {
 
-		if (arr[piece->x][piece->y - 1]->type != 'E' && (piece->x == 7 || arr[piece->x + 1][piece->y - 1]->color != 'b') && (piece->x == 0 || arr[piece->x - 1][piece->y - 1]->color != 'b'))
+		if (arr[piece->y-1][piece->x]->type != 'E' && (piece->x == 7 || arr[piece->y-1][piece->x+1]->color != 'b') && (piece->x == 0 || arr[piece->y - 1][piece->x - 1]->color != 'b'))
 			return true;
 
 	}

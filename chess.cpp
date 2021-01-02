@@ -70,13 +70,15 @@ int main() {
 				}
 			}
 			if (!blackUser) {
-				if (turn == 1) {
+				/*if (turn == 1) {
 					std::swap(board.arr[1][3], board.arr[2][3]);
+					board.arr[2][3]->moved = true;
 				}
 				else if (turn == 3) {
 					std::swap(board.arr[1][4], board.arr[3][4]);
+					board.arr[3][4]->moved = true;
 				}
-				else
+				else*/
 					bestChoice(board, searchDepth, 'b', turn);
 			}
 				
