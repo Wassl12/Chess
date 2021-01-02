@@ -4,7 +4,7 @@
 #include <iostream>
 double k = 1;
 int moveschecked = 0;
-int movesCut = 0;
+double movesCut = 0;
 
 double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& swapBuffer, vector<Move>& moveBuffer, int turn, double alpha, double beta) {// this will swap
 	// if color is odd, black
@@ -37,6 +37,7 @@ double boardSwapper(Board& board, int searchDepth, int depth, vector<Piece*>& sw
 	bool firstPass = true;
 	for (unsigned int i = 0; i < moves.size(); i++) {
 		if (beta <= alpha) {
+			movesCut += pow(20, (searchDepth - depth));
 			return result;
 		}
 		bool oldMoved = board.arr[moves[i].starty][moves[i].startx]->moved;
@@ -133,6 +134,8 @@ void bestChoice(Board &board, int searchDepth, char color, int turn) {
 		swapBuffer[i] = new Empty('E', -1, -1);
 	double result = boardSwapper(board,searchDepth, 0, swapBuffer,moveBuffer,turn,-1000000000,1000000000);
 	cout << "The board's position is valued at: " << result << '\n';
+	cout << "Moves cut: " << movesCut << endl;
+	cout << "Moves checked: " << moveschecked << endl;
 	// this will edit the board into the proper move
 	// still need to delete swap buffer
 	for (int i = 0; i < searchDepth; i++)

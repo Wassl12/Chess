@@ -941,6 +941,15 @@ bool Board::threatened(int y, int x, char defendingColor) {
 	if(y < 7 && x > 1 && arr[y + 1][x - 2]->type == 'N' && arr[y + 1][x - 2]->color != defendingColor)
 		return true;
 	
+	if (x > 0 && y > 0 && arr[y - 1][x - 1]->type == 'P' && arr[y - 1][x - 1]->color == 'b' && defendingColor == 'w')
+		return true;
+	if (x < 7 && y > 0 && arr[y - 1][x + 1]->type == 'P' && arr[y - 1][x + 1]->color == 'b' && defendingColor == 'w')
+		return true;
+	if (x > 0 && y < 7 && arr[y + 1][x - 1]->type == 'P' && arr[y + 1][x - 1]->color == 'w' && defendingColor == 'b')
+		return true;
+	if (x < 7 && y < 7 && arr[y + 1][x + 1]->type == 'P' && arr[y + 1][x + 1]->color == 'w' && defendingColor == 'b')
+		return true;
+
 	// PASSED ALL CHECKS
 	return false;
 

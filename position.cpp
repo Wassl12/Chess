@@ -54,6 +54,10 @@ double position(Board &board, int turn, char whoseMove, bool &hang) {
 	const double bishopTrapped = -0.15;
 	const double QueenTrapped = -0.5;
 	const double knightTrapped = -0.2;
+	/*const double rookTrapped = -1.2;
+	const double bishopTrapped = -0.7;
+	const double QueenTrapped = -1.5;
+	const double knightTrapped = -0.5;*/
 	
 	
 

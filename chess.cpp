@@ -12,7 +12,7 @@ using namespace std;
 
 int main() {
 
-	cout << "Please enter the search depth: (Somewhere between 2 and 5)" << endl;
+	cout << "Please enter preferred search depth: (8 is recommended, but 7 or 6 is also acceptable)" << endl;
 	int searchDepth = 0;
 	cin >> searchDepth;
 	cout << "Would you like to play as white, black, or as a spectator?" << endl;
