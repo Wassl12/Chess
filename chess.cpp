@@ -9,9 +9,10 @@
 
 using namespace std;
 
+
 int main() {
 
-	cout << "Please enter the search depth: (Somewhere between 2 and 5)" << endl;
+	cout << "Please enter preferred search depth: (8 is recommended, but 7 or 6 is also acceptable)" << endl;
 	int searchDepth = 0;
 	cin >> searchDepth;
 	cout << "Would you like to play as white, black, or as a spectator?" << endl;
@@ -20,6 +21,7 @@ int main() {
 	cout << "Please type moves as <Piece> <StartFile> <StartRank> <EndFile> <EndRank>" << endl;
 	bool whiteUser = false;
 	bool blackUser = false;
+	
 	if (choice[0] == 'w' || choice[0] == 'W')
 		whiteUser = true;
 	else if (choice[0] == 'b' || choice[0] == 'B')
@@ -27,11 +29,12 @@ int main() {
 	Board board;
 	int turn = 0;
 	while (true) {
+		cout << "turn #" << turn << '\n';
 		board.Print();
 		if (turn % 2 == 0) {// it's white's turn
 			
 			while (whiteUser) {
-				Move movie = translate(cin);
+				Move movie = translate();
 				if (!swapBoards(board, movie)) {// go through with the move
 					Piece* swappedPiece = new Empty('E', -1, -1);
 					Piece* temp = swappedPiece;
@@ -47,12 +50,12 @@ int main() {
 
 			}
 			if (!whiteUser)
-				bestChoice(board, searchDepth);
+				bestChoice(board, searchDepth,'w',turn);
 		}
 		else {
 
 			while (blackUser) {
-				Move movie = translate(cin);
+				Move movie = translate();
 				if (!swapBoards(board, movie)) {// go through with the move
 					Piece* swappedPiece = new Empty('E', -1, -1);
 					Piece* temp = swappedPiece;
@@ -66,13 +69,24 @@ int main() {
 					cout << "Illegal move... try another one" << endl;
 				}
 			}
-			if (!blackUser)
-				bestChoice(board, searchDepth);
+			if (!blackUser) {
+				/*if (turn == 1) {
+					std::swap(board.arr[1][3], board.arr[2][3]);
+					board.arr[2][3]->moved = true;
+				}
+				else if (turn == 3) {
+					std::swap(board.arr[1][4], board.arr[3][4]);
+					board.arr[3][4]->moved = true;
+				}
+				else*/
+					bestChoice(board, searchDepth, 'b', turn);
+			}
+				
 
 
 		}
 
-
+		turn++;
 	}
 
 

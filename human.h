@@ -3,4 +3,4 @@
 #include "verification.h"
 
 
-Move translate(istream& humanMove);
+Move translate();

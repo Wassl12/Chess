@@ -1,18 +1,20 @@
 #include "human.h"
 #include <string>
+#include <iostream>
 
-Move translate(istream& humanMove) {
+Move translate() {
 	string piece;
 	string startRank;
 	string startFile;
 	string endRank;
 	string endFile;
-	humanMove >> piece >> startFile >> startRank >> endFile >> endRank;
+	std::cout << "Please enter a move: ";
+	std::cin >> piece >> startFile >> startRank >> endFile >> endRank;
 	Move movie;
 	movie.finalx = int8_t(endFile[0] - 'a');
-	movie.finaly = stoi(endRank) - 8;
+	movie.finaly = 8 - stoi(endRank);
 	movie.startx = int8_t(startFile[0] - 'a');
-	movie.starty = stoi(startRank) - 8;
+	movie.starty = 8 - stoi(startRank);
 	if (piece[0] >= 97)
 		movie.pieceType = piece[0] - 32;
 	else

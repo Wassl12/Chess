@@ -5,7 +5,7 @@
 #include "verification.h"
 #include "pieces.h"
 #include "position.h"
-
+#include <iostream>
 
 
 void verify(Board &board, vector <Move>& moves) {
@@ -20,23 +20,29 @@ void verify(Board &board, vector <Move>& moves) {
 bool swapBoards(Board& board, Move& mov) {
 	char thisColor = board.arr[mov.startx][mov.starty]->color;
 
-	Piece* swappedPiece = new Empty('E', -1, -1);
+	if (mov.finalx == -1 || mov.finalx == -2) {// castling
+		return false;
+	}
+	Piece* empty = new Empty('E', -1, -1);
 
 
-	Piece* temp = swappedPiece;
-	swappedPiece = board.arr[mov.finaly][mov.finalx];//captured piece
+	Piece* temp = board.arr[mov.starty][mov.startx];
+	board.arr[mov.starty][mov.startx] = empty;
+	empty = board.arr[mov.finaly][mov.finalx];//captured piece
 	board.arr[mov.finaly][mov.finalx] = temp;
-	std::swap(board.arr[mov.finaly][mov.finalx], board.arr[mov.starty][mov.startx]);
+	
 	// swap stores the destroyed piece
 
 	bool result;
 	if (thisColor == 'b')
-		result = board.threatened(board.bKing->x, board.bKing->y, 'b');
+		result = board.threatened(board.bKing->y, board.bKing->x, 'b');
 	else
-		result = board.threatened(board.wKing->x, board.wKing->y, 'w');
+		result = board.threatened(board.wKing->y, board.wKing->x, 'w');
 
-	std::swap(board.arr[mov.finaly][mov.finalx], board.arr[mov.starty][mov.startx]);
-	std::swap(board.arr[mov.finaly][mov.finalx], swappedPiece);
+	temp = board.arr[mov.starty][mov.startx];
+	board.arr[mov.starty][mov.startx] = board.arr[mov.finaly][mov.finalx];
+	
+	board.arr[mov.finaly][mov.finalx] = empty;
 	delete temp;
 	return result;
 }
@@ -55,5 +61,13 @@ void moveMaker(Board &board, vector <Move>& moves, char color) {
 
 		}
 	}
-	
+	/*for (auto mov : moves) {
+		cout << mov.pieceType << ' ' << char(mov.startx + '0') << ' ' << char(mov.starty + '0') << ' ' << char(mov.finalx + '0') << ' ' << char(mov.finaly + '0') << '\n';
+
+	}*/
+	verify(board, moves);
+	/*for (auto mov : moves) {
+		cout << mov.pieceType << ' ' << char(mov.startx + '0') << ' ' << char(mov.starty + '0') << ' ' << char(mov.finalx + '0') << ' ' << char(mov.finaly + '0') << '\n';
+
+	}*/
 }
